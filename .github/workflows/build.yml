@@ -13,32 +13,25 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
       with:
-        submodules: false
+        flutter-version: '3.35.5'
 
-    - name: Setup JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-
-    - name: Build Android APK
+    - name: Install dependencies
       run: |
-        cd flutter/android
-        chmod +x ./gradlew
-        ./gradlew clean
-        ./gradlew assembleRelease
+        cd flutter
+        flutter pub get
 
-    - name: Find APK file
+    - name: Build APK with Flutter
       run: |
-        echo "Looking for APK files..."
-        find . -name "*.apk" -type f
-        echo "APK should be at: flutter/android/app/build/outputs/apk/release/app-release.apk"
-        ls -la flutter/android/app/build/outputs/apk/release/ || echo "APK directory not found"
+        cd flutter
+        flutter build apk --release
+        ls -la build/app/outputs/apk/release/
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: rustdesk-apk
-        path: flutter/android/app/build/outputs/apk/release/app-release.apk
-        if-no-files-found: error
+        path: flutter/build/app/outputs/apk/release/app-release.apk
