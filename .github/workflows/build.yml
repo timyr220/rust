@@ -4,12 +4,12 @@ name: Build RustDesk APK
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # Позволяет запускать вручную
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -17,9 +17,9 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.16.9'  # Стабильная версия
+        flutter-version: '3.16.9'
 
-    - name: Setup Java
+    - name: Setup JDK
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
@@ -35,9 +35,8 @@ jobs:
         cd flutter
         flutter build apk --release
 
-    - name: Upload APK artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: rustdesk-apk
         path: flutter/build/app/outputs/apk/release/app-release.apk
-        retention-days: 30
