@@ -22,19 +22,23 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
 
-    - name: Build with Gradle
+    - name: Build Android APK
       run: |
         cd flutter/android
         chmod +x ./gradlew
         ./gradlew clean
         ./gradlew assembleRelease
 
-    - name: List APK files
+    - name: Find APK file
       run: |
+        echo "Looking for APK files..."
         find . -name "*.apk" -type f
+        echo "APK should be at: flutter/android/app/build/outputs/apk/release/app-release.apk"
+        ls -la flutter/android/app/build/outputs/apk/release/ || echo "APK directory not found"
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: rustdesk-apk
         path: flutter/android/app/build/outputs/apk/release/app-release.apk
+        if-no-files-found: error
