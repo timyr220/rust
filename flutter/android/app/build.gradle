@@ -67,7 +67,7 @@ android {
     defaultConfig {
         // ИЗМЕНИЛ applicationId чтобы совпадало с AndroidManifest.xml
         applicationId "com.rustdesk.stealth"
-        minSdkVersion 21
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

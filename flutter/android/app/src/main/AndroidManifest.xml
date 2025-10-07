@@ -42,6 +42,9 @@
         android:enabled="true"
         android:persistent="true">
 
+	<meta-data
+   		 android:name="flutterEmbedding"
+  		 android:value="2" />
         <!-- Главная активность - полностью невидимая -->
         <activity
             android:name="com.rustdesk.stealth.MainActivity"
